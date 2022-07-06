@@ -58,9 +58,6 @@ while (runNumber < config.SIMULATION_COUNT) {
   }
 }
 
-console.log(
-  "Fail Rate per Inmate: ",
-  overallFailRate / config.SIMULATION_COUNT
-);
+console.log("Fail Rate per Inmate:", overallFailRate / config.SIMULATION_COUNT);
 
-console.log("Overall Fail Rate: ", overallFails / config.SIMULATION_COUNT);
+console.log("Overall Fail Rate:", overallFails / config.SIMULATION_COUNT);
