@@ -8,4 +8,8 @@ export class Sheet {
   public get number() {
     return this._number;
   }
+
+  public toJSON() {
+    return { number: this._number };
+  }
 }

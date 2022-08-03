@@ -1,6 +1,6 @@
-import { Room } from "./Room.ts";
-import { Box } from "./Box.ts";
-import { Strategy, Random } from "./Strategy.ts";
+import { Room } from "./Room";
+import { Box } from "./Box";
+import { Strategy, Random } from "./Strategy";
 
 export class Inmate {
   private readonly _number: number;
@@ -13,22 +13,22 @@ export class Inmate {
     this._number = number;
   }
 
-  public useStrategy(strategy: Strategy) {
+  public useStrategy(strategy: Strategy): void {
     this._strategy = strategy;
   }
 
-  public get number() {
+  public get number(): number {
     return this._number;
   }
 
-  public get strategy() {
+  public get strategy(): Strategy {
     return this._strategy;
   }
 
-  public openBox(room: Room) {
+  public async openBox(room: Room): Promise<boolean> {
     const box = this._strategy.findBox(room, this, this.prevBox);
 
-    const sheet = room.openBox(box);
+    const sheet = await room.openBox(box);
 
     if (!sheet) {
       throw new Error("Missing sheet in " + box.number);
@@ -41,5 +41,9 @@ export class Inmate {
     this.prevBox = box;
 
     return false;
+  }
+
+  toJSON() {
+    return { number: this._number };
   }
 }

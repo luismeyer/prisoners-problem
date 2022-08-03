@@ -1,6 +1,6 @@
-import { Room } from "./Room.ts";
-import { Box } from "./Box.ts";
-import { Inmate } from "./Inmate.ts";
+import { Room } from "./Room";
+import { Box } from "./Box";
+import { Inmate } from "./Inmate";
 
 export interface Strategy {
   findBox(room: Room, inmate: Inmate, prevBox?: Box): Box;

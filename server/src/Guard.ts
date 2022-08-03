@@ -1,6 +1,6 @@
-import { Sheet } from "./Sheet.ts";
-import { Room } from "./Room.ts";
-import { Inmate } from "./Inmate.ts";
+import { Sheet } from "./Sheet";
+import { Room } from "./Room";
+import { Inmate } from "./Inmate";
 
 export class Guard {
   public createNumberSheets(sheetCount: number): Sheet[] {
@@ -30,27 +30,18 @@ export class Guard {
     });
   }
 
-  public superviseBoxOpening(room: Room, inmate: Inmate): boolean {
+  public async superviseBoxOpening(
+    room: Room,
+    inmate: Inmate
+  ): Promise<boolean> {
+    room.join(inmate);
+
     const allowedBoxes = room.boxCount / 2;
 
     let success = false;
 
-    let sameNumberCount = 0;
-
-    let oldNumber = 0;
-
     while (!success && room.openBoxes.length <= allowedBoxes) {
-      success = inmate.openBox(room);
-
-      if (oldNumber === room.openBoxes.length) {
-        sameNumberCount = sameNumberCount + 1;
-      }
-
-      if (sameNumberCount === 10) {
-        throw new Error("LOl");
-      }
-
-      oldNumber = room.openBoxes.length;
+      success = await inmate.openBox(room);
     }
 
     room.reset();

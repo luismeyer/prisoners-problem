@@ -1,7 +1,7 @@
-import { Sheet } from "./Sheet.ts";
+import { Sheet } from "./Sheet";
 
 export class Box {
-  private _sheet: Sheet | undefined;
+  public _sheet: Sheet | undefined;
 
   public readonly number: number;
 
@@ -15,5 +15,12 @@ export class Box {
 
   public get sheet() {
     return this._sheet;
+  }
+
+  public toJSON() {
+    return {
+      sheet: this._sheet?.toJSON(),
+      number: this.number,
+    };
   }
 }
