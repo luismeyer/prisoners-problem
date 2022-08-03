@@ -1,7 +1,7 @@
 import { UIAdapter, UIEvent } from "./UIAdapter";
 
-export class ConsoleAdapter implements UIAdapter {
-  emit(event: UIEvent) {
+export class ConsoleAdapter extends UIAdapter {
+  emitHandler(event: UIEvent): Promise<unknown> {
     console.log(event);
 
     return Promise.resolve();

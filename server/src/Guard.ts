@@ -44,7 +44,7 @@ export class Guard {
       success = await inmate.openBox(room);
     }
 
-    room.reset();
+    await room.reset();
 
     return success;
   }

@@ -9,6 +9,8 @@ type RunResult = {
 export class Simulation {
   private _config: Config;
 
+  private _isRunning = false;
+
   constructor(config: Config) {
     this._config = config;
   }
@@ -45,7 +47,9 @@ export class Simulation {
     return fails;
   }
 
-  public async execute() {
+  public async start() {
+    this._isRunning = true;
+
     const { PROBLEM_COUNT, SIMULATION_COUNT } = this._config;
 
     let runNumber = 0;
@@ -74,6 +78,12 @@ export class Simulation {
       }
     }
 
+    if (!this._isRunning) {
+      return "CANCELLED";
+    }
+
+    this._isRunning = false;
+
     return {
       failedRuns,
       failRatePerRun: failedRuns / SIMULATION_COUNT,
@@ -81,5 +91,9 @@ export class Simulation {
       failRatePerInmate: overallFailRate / SIMULATION_COUNT,
       runData,
     };
+  }
+
+  public stop() {
+    this._isRunning = false;
   }
 }

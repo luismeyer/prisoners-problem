@@ -7,14 +7,19 @@ export class Config {
 
   public SIMULATION_COUNT = 100;
 
+  public SIMULATION_SPEED = 0;
+
   public STRATEGY: Strategy = new Loop();
 
-  public UI_ADAPTER: UIAdapter = new ConsoleAdapter();
+  public UI_ADAPTER: UIAdapter;
 
   constructor() {
     this.loadCount();
     this.loadSimulationCount();
     this.loadStrategy();
+    this.loadSimulationSpeed();
+
+    this.UI_ADAPTER = new ConsoleAdapter(this);
   }
 
   private loadValueFromEnv(flag: string, type: "number" | "string") {
@@ -40,33 +45,25 @@ export class Config {
   private loadCount() {
     const count = this.loadValueFromEnv("COUNT", "number");
 
-    if (!count) {
-      return;
+    if (count) {
+      this.PROBLEM_COUNT = Number(count);
     }
+  }
 
-    const parsedCount = Number(count);
+  private loadSimulationSpeed() {
+    const simulationSpeed = this.loadValueFromEnv("SIMULATION_SPEED", "number");
 
-    if (isNaN(parsedCount)) {
-      throw new Error("Count config needs to be an integer");
+    if (simulationSpeed) {
+      this.SIMULATION_SPEED = Number(simulationSpeed);
     }
-
-    this.PROBLEM_COUNT = parsedCount;
   }
 
   private loadSimulationCount() {
-    const simulationCount = this.loadValueFromEnv("SIM_COUNT", "number");
+    const simulationCount = this.loadValueFromEnv("SIMULATION_COUNT", "number");
 
-    if (!simulationCount) {
-      return;
+    if (simulationCount) {
+      this.SIMULATION_COUNT = Number(simulationCount);
     }
-
-    const parsedSimulationCount = Number(simulationCount);
-
-    if (isNaN(parsedSimulationCount)) {
-      throw new Error("Simulation Count config needs to be an integer");
-    }
-
-    this.SIMULATION_COUNT = parsedSimulationCount;
   }
 
   private loadStrategy() {

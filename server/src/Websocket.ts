@@ -14,10 +14,13 @@ type StartMessage = {
 };
 
 export class WebSocketServer {
-  private server: http.Server;
+  private _server: http.Server;
+
+  private _simulations: WeakMap<ws.WebSocket, Simulation>;
 
   constructor(server: http.Server) {
-    this.server = server;
+    this._server = server;
+    this._simulations = new WeakMap();
   }
 
   private parseConfig(message: string) {
@@ -25,7 +28,8 @@ export class WebSocketServer {
       const payload: StartMessage = JSON.parse(message);
 
       const config = new Config();
-      const { problemCount, simulationCount, strategy } = payload;
+      const { problemCount, simulationCount, strategy, simulationSpeed } =
+        payload;
 
       if (problemCount && typeof problemCount === "number") {
         config.PROBLEM_COUNT = problemCount;
@@ -43,6 +47,10 @@ export class WebSocketServer {
         config.STRATEGY = new Random();
       }
 
+      if (simulationSpeed && typeof simulationSpeed === "number") {
+        config.SIMULATION_SPEED = simulationSpeed;
+      }
+
       return config;
     } catch {
       return new Config();
@@ -50,27 +58,39 @@ export class WebSocketServer {
   }
 
   public start() {
-    const wss = new ws.Server({ server: this.server });
+    const wss = new ws.Server({ server: this._server });
 
     wss.on("connection", (ws) => {
-      let isRunning = false;
+      ws.on("message", async (message) => {
+        const simulation = this._simulations.get(ws);
 
-      ws.on("message", async (message: string) => {
-        if (isRunning) {
+        const payload = message.toString();
+
+        if (simulation && payload === "STOP") {
+          simulation.stop();
+          this._simulations.delete(ws);
+          return;
+        }
+
+        if (simulation) {
           ws.send("Sim already running");
           return;
         }
 
-        const config = this.parseConfig(message);
+        const config = this.parseConfig(payload);
 
-        const adapter = new ServerAdapter(ws);
+        const adapter = new ServerAdapter(config, ws);
         config.UI_ADAPTER = adapter;
 
-        const simulation = new Simulation(config);
-        const result = await simulation.execute();
+        const newSimulation = new Simulation(config);
+        this._simulations.set(ws, newSimulation);
+
+        const result = await newSimulation.start();
 
         const parsedResult = JSON.stringify(result);
         ws.send(parsedResult);
+
+        this._simulations.delete(ws);
       });
 
       ws.send("CONNECTED");
@@ -78,10 +98,12 @@ export class WebSocketServer {
   }
 }
 
-export class ServerAdapter implements UIAdapter {
+export class ServerAdapter extends UIAdapter {
   public websocket: ws.WebSocket;
 
-  constructor(websocket: ws.WebSocket) {
+  constructor(config: Config, websocket: ws.WebSocket) {
+    super(config);
+
     this.websocket = websocket;
   }
 
@@ -100,8 +122,12 @@ export class ServerAdapter implements UIAdapter {
     });
   }
 
-  emit(event: UIEvent) {
+  emitHandler(event: UIEvent) {
     const json = this.stringifyEvent(event);
+
+    if (this.websocket.readyState !== this.websocket.OPEN) {
+      return Promise.resolve();
+    }
 
     return new Promise((res, rej) => {
       this.websocket.send(json, (err) => {
