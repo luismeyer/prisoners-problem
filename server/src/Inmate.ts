@@ -2,6 +2,10 @@ import { Room } from "./Room";
 import { Box } from "./Box";
 import { Strategy, Random } from "./Strategy";
 
+export type SimpleInmate = {
+  number: number;
+};
+
 export class Inmate {
   private readonly _number: number;
 
@@ -43,7 +47,7 @@ export class Inmate {
     return false;
   }
 
-  toJSON() {
+  simplify(): SimpleInmate {
     return { number: this._number };
   }
 }

@@ -1,3 +1,7 @@
+export type SimpleSheet = {
+  number: number | undefined;
+};
+
 export class Sheet {
   private _number: number | undefined;
 
@@ -9,7 +13,7 @@ export class Sheet {
     return this._number;
   }
 
-  public toJSON() {
+  public simplify(): SimpleSheet {
     return { number: this._number };
   }
 }

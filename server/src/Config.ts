@@ -5,7 +5,7 @@ import { UIAdapter } from "./UIAdapter";
 export class Config {
   public PROBLEM_COUNT = 100;
 
-  public SIMULATION_COUNT = 100;
+  public SIMULATION_COUNT = 10;
 
   public SIMULATION_SPEED = 0;
 

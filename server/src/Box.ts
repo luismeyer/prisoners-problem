@@ -1,4 +1,9 @@
-import { Sheet } from "./Sheet";
+import { Sheet, SimpleSheet } from "./Sheet";
+
+export type SimpleBox = {
+  sheet: SimpleSheet | undefined;
+  number: number;
+};
 
 export class Box {
   public _sheet: Sheet | undefined;
@@ -17,9 +22,9 @@ export class Box {
     return this._sheet;
   }
 
-  public toJSON() {
+  public simplify(): SimpleBox {
     return {
-      sheet: this._sheet?.toJSON(),
+      sheet: this._sheet?.simplify(),
       number: this.number,
     };
   }

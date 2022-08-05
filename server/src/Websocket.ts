@@ -1,8 +1,10 @@
 import http from "http";
 import ws from "ws";
 
+import { SimpleBox } from "./Box";
 import { Config } from "./Config";
-import { Simulation } from "./Simulation";
+import { SimpleInmate } from "./Inmate";
+import { Simulation, SimulationResult } from "./Simulation";
 import { Loop, Random } from "./Strategy";
 import { UIAdapter, UIEvent } from "./UIAdapter";
 
@@ -11,6 +13,39 @@ type StartMessage = {
   strategy?: unknown;
   simulationCount?: unknown;
   simulationSpeed?: unknown;
+};
+
+type ApiEvent = {
+  currentInmate: SimpleInmate | undefined;
+  currentBox: SimpleBox | undefined;
+  openBoxes: SimpleBox[];
+  closedBoxes: SimpleBox[];
+};
+
+type ApiMessage =
+  | UpdateMessage
+  | ResultMessage
+  | ConnectMessage
+  | RunningMessage;
+
+type ConnectMessage = {
+  type: "connected";
+  data: "success";
+};
+
+type UpdateMessage = {
+  type: "update";
+  data: ApiEvent;
+};
+
+type ResultMessage = {
+  type: "done";
+  data: SimulationResult;
+};
+
+type RunningMessage = {
+  type: "running";
+  data: "success";
 };
 
 export class WebSocketServer {
@@ -57,10 +92,22 @@ export class WebSocketServer {
     }
   }
 
+  private sendToWebsocket(ws: ws.WebSocket) {
+    return (data: ApiMessage) => ws.send(JSON.stringify(data));
+  }
+
   public start() {
     const wss = new ws.Server({ server: this._server });
 
     wss.on("connection", (ws) => {
+      const send = this.sendToWebsocket(ws);
+
+      ws.on("close", () => {
+        const simulation = this._simulations.get(ws);
+
+        simulation?.stop();
+      });
+
       ws.on("message", async (message) => {
         const simulation = this._simulations.get(ws);
 
@@ -73,7 +120,7 @@ export class WebSocketServer {
         }
 
         if (simulation) {
-          ws.send("Sim already running");
+          send({ type: "running", data: "success" });
           return;
         }
 
@@ -87,13 +134,12 @@ export class WebSocketServer {
 
         const result = await newSimulation.start();
 
-        const parsedResult = JSON.stringify(result);
-        ws.send(parsedResult);
+        send({ type: "done", data: result });
 
         this._simulations.delete(ws);
       });
 
-      ws.send("CONNECTED");
+      send({ type: "connected", data: "success" });
     });
   }
 }
@@ -107,23 +153,29 @@ export class ServerAdapter extends UIAdapter {
     this.websocket = websocket;
   }
 
-  private stringifyEvent(event: UIEvent): string {
-    const closedBoxes = event.closedBoxes.map((box) => box.toJSON());
-    const openBoxes = event.openBoxes.map((box) => box.toJSON());
-    const currentBox = event.currentBox?.toJSON();
+  private simplifyEvent(event: UIEvent): ApiEvent {
+    const closedBoxes = event.closedBoxes.map((box) => box.simplify());
+    const openBoxes = event.openBoxes.map((box) => box.simplify());
+    const currentBox = event.currentBox?.simplify();
 
-    const currentInmate = event.currentInmate?.toJSON();
+    const currentInmate = event.currentInmate?.simplify();
 
-    return JSON.stringify({
+    return {
       currentInmate,
       currentBox,
       openBoxes,
       closedBoxes,
-    });
+    };
+  }
+
+  private stringifyMessage(message: UpdateMessage): string {
+    return JSON.stringify(message);
   }
 
   emitHandler(event: UIEvent) {
-    const json = this.stringifyEvent(event);
+    const simpleEvent = this.simplifyEvent(event);
+
+    const json = this.stringifyMessage({ type: "update", data: simpleEvent });
 
     if (this.websocket.readyState !== this.websocket.OPEN) {
       return Promise.resolve();

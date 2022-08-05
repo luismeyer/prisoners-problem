@@ -6,6 +6,16 @@ type RunResult = {
   failRate: number;
 };
 
+export type SimulationResult =
+  | "CANCELLED"
+  | {
+      failedRuns: number;
+      failRatePerRun: number;
+      failedInmates: number;
+      failRatePerInmate: number;
+      runData: Record<number, RunResult>;
+    };
+
 export class Simulation {
   private _config: Config;
 
@@ -15,7 +25,7 @@ export class Simulation {
     this._config = config;
   }
 
-  private async run() {
+  private async run(): Promise<number> {
     const { PROBLEM_COUNT, STRATEGY } = this._config;
 
     // create prison with inmates
@@ -47,7 +57,7 @@ export class Simulation {
     return fails;
   }
 
-  public async start() {
+  public async start(): Promise<SimulationResult> {
     this._isRunning = true;
 
     const { PROBLEM_COUNT, SIMULATION_COUNT } = this._config;
