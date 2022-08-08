@@ -1,28 +1,42 @@
-import { FC, useEffect } from "react";
+import { useAtomValue } from "jotai";
+import { FC, useCallback } from "react";
 
-import { useWebSocket } from "./hooks/use-websocket";
+import { Config } from "./components/config";
+import { Room } from "./components/room";
+import { SimulationContext } from "./context/simulation";
+import { useApi } from "./hooks/use-api";
+import { configAtom } from "./store/config";
 
 export const App: FC = () => {
-  const { start, loading } = useWebSocket();
+  const config = useAtomValue(configAtom);
 
-  useEffect(() => {
+  const { start, loading, simulation, status } = useApi();
+
+  const startSimulation = useCallback(() => {
     if (loading) {
       return;
     }
 
     start();
-  }, [loading]);
+  }, [start, loading]);
 
   return (
-    <>
-      {/* <Config />
+    <SimulationContext.Provider value={{ status, data: simulation }}>
+      <Config />
 
       <div>
-        <button onClick={() => start(randomStrategy)}>start</button>
-        <span>{currentInmate?.number}</span>
+        <button onClick={startSimulation}>start</button>
       </div>
 
-      {config.ui && <Room />} */}
-    </>
+      <div>
+        <span>Aktuelle Gefangene: {simulation.currentInmate?.number}</span>
+      </div>
+
+      <div>
+        <span>Offene Boxen: {simulation.openBoxes.length}</span>
+      </div>
+
+      {config.ui && <Room />}
+    </SimulationContext.Provider>
   );
 };

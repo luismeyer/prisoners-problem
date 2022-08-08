@@ -1,24 +1,17 @@
 import { atom } from "jotai";
 
 export type Config = {
-  inmateCount: number;
+  problemCount: number;
+  strategy: "loop" | "random";
   simulationCount: number;
-  strategy: "random" | "loop";
+  simulationSpeed: number;
   ui: boolean;
 };
 
-const configDefaultAtom = atom<Config>({
-  inmateCount: 100,
-  simulationCount: 1,
+export const configAtom = atom<Config>({
+  problemCount: 100,
+  simulationCount: 10,
   strategy: "random",
+  simulationSpeed: 1000,
   ui: true,
 });
-
-export const configAtom = atom<Config, Partial<Config>>(
-  (get) => get(configDefaultAtom),
-  (get, set, update) => {
-    const oldValue = get(configDefaultAtom);
-
-    set(configDefaultAtom, { ...oldValue, ...update });
-  }
-);

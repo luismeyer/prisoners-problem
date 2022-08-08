@@ -11,7 +11,7 @@ export type SimpleInmate = {
   number: number;
 };
 
-export type ApiEvent = {
+export type Simulation = {
   currentInmate: SimpleInmate | undefined;
   currentBox: SimpleBox | undefined;
   openBoxes: SimpleBox[];
@@ -37,7 +37,7 @@ export type ApiMessage = UpdateMessage | ResultMessage;
 
 export type UpdateMessage = {
   type: "update";
-  data: ApiEvent;
+  data: Simulation;
 };
 
 export type ResultMessage = {

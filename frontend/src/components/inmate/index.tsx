@@ -1,30 +1,43 @@
 import { useAtomValue } from "jotai";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 
+import { useSimulation } from "../../context/simulation";
+import { Locations } from "../../hooks/use-relativ-position";
 import PrisonerImg from "../../icons/prisoner.png";
-import { boxLocationsAtom, currentInmateAtom } from "../../store/simulation";
+import { configAtom } from "../../store/config";
 import * as S from "./styled";
 
-export const Inmate: FC = () => {
-  const currentInmate = useAtomValue(currentInmateAtom);
-  const boxLocations = useAtomValue(boxLocationsAtom);
+type InmateProps = {
+  boxLocations: Locations;
+};
 
-  let left = "0";
-  let top = "0";
+export const Inmate: FC<InmateProps> = ({ boxLocations }) => {
+  const { data } = useSimulation();
 
-  if (currentInmate?.currentBox && boxLocations) {
-    const { currentBox } = currentInmate;
+  const { simulationSpeed } = useAtomValue(configAtom);
 
-    const boxLocation = boxLocations[currentBox];
+  const location = useMemo(() => {
+    let left = "0";
+    let top = "0";
 
-    if (boxLocation) {
-      left = boxLocation.left + "px";
-      top = boxLocation.top + "px";
+    if (data.currentBox && boxLocations) {
+      const boxLocation = boxLocations[data.currentBox.number];
+
+      if (boxLocation) {
+        left = boxLocation.left + "px";
+        top = boxLocation.top + "px";
+      }
     }
-  }
+
+    return { left, top };
+  }, [data.currentBox, boxLocations]);
 
   return (
-    <S.AbsoluteContainer left={left} top={top}>
+    <S.AbsoluteContainer
+      speed={simulationSpeed / 1000}
+      left={location.left}
+      top={location.top}
+    >
       <S.Img src={PrisonerImg} />
     </S.AbsoluteContainer>
   );

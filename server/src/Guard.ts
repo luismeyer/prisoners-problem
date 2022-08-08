@@ -40,7 +40,7 @@ export class Guard {
 
     let success = false;
 
-    while (!success && room.openBoxes.length <= allowedBoxes) {
+    while (!success && room.openBoxes.length < allowedBoxes) {
       success = await inmate.openBox(room);
     }
 

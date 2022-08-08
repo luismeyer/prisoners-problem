@@ -38,6 +38,7 @@ export class Room {
   }
 
   public get closedBoxes(): Box[] {
+    console.log(this._allBoxes, this._openBoxes);
     return this._allBoxes.filter(
       (box1) => !this._openBoxes.some((box2) => box1.number === box2.number)
     );
@@ -65,7 +66,7 @@ export class Room {
 
     this._openBoxes.push(box);
 
-    await this.updateUI();
+    await this.updateUI(box);
 
     return box.sheet;
   }

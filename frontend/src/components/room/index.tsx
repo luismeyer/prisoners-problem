@@ -1,52 +1,45 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import { useSimulation } from "../../context/simulation";
 import {
   ChildRef,
-  useRelativeLocations,
-} from "../../hooks/use-relative-position";
+  Locations,
+  useRelativePositions,
+} from "../../hooks/use-relativ-position";
 import { useResizeEffect } from "../../hooks/use-resize-effect";
-
 import { configAtom } from "../../store/config";
-import {
-  allBoxesAtom,
-  boxLocationsAtom,
-  currentInmateAtom,
-  openBoxesAtom,
-} from "../../store/simulation";
 import { Box } from "../box";
 import { Inmate } from "../inmate";
 import * as S from "./styled";
 
 export const Room: FC = () => {
+  const { data } = useSimulation();
+
   const gridRef = useRef<HTMLDivElement>(null);
   const boxRefs = useRef<ChildRef[]>([]);
 
-  const currentInmate = useAtomValue(currentInmateAtom);
-
-  const allBoxes = useAtomValue(allBoxesAtom);
-  const setBoxLocations = useSetAtom(boxLocationsAtom);
-
   const config = useAtomValue(configAtom);
 
-  const relativePositions = useRelativeLocations(gridRef, boxRefs);
+  const relativePositions = useRelativePositions(gridRef, boxRefs);
 
   const boxSize = useMemo(() => {
     const maxSize = Math.min(window.innerWidth, window.innerHeight);
 
-    return (maxSize - 100) / Math.sqrt(config.inmateCount) / 2;
-  }, [config.inmateCount]);
+    return (maxSize - 100) / Math.sqrt(config.problemCount) / 2;
+  }, [config.problemCount]);
 
-  const updateBoxLocations = useCallback(() => {
-    setBoxLocations(relativePositions());
-  }, [relativePositions]);
-
-  useResizeEffect(updateBoxLocations);
-
-  useEffect(() => updateBoxLocations, [config.inmateCount]);
+  const allBoxes = useMemo(
+    () =>
+      [...data.closedBoxes, ...data.openBoxes].sort(
+        (a, b) => a.number - b.number
+      ),
+    [data.closedBoxes, data.openBoxes]
+  );
 
   return (
-    <S.Grid ref={gridRef} boxCount={config.inmateCount} boxSize={boxSize}>
-      {currentInmate && <Inmate />}
+    <S.Grid ref={gridRef} boxCount={config.problemCount} boxSize={boxSize}>
+      {data.currentInmate && <Inmate boxLocations={relativePositions} />}
 
       {allBoxes.map((box) => (
         <Box
@@ -57,7 +50,7 @@ export const Room: FC = () => {
 
             boxRefs.current = [...boxRefs.current, { number: box.number, ref }];
           }}
-          sheetNumber={box.sheetNumber}
+          sheetNumber={box.sheet?.number ?? 0}
           number={box.number}
           key={box.number}
           size={boxSize}

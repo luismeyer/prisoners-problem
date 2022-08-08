@@ -5,7 +5,7 @@ import CloseIcon from "../../icons/closed.png";
 
 import * as S from "./styled";
 import { useAtomValue } from "jotai";
-import { openBoxesAtom } from "../../store/simulation";
+import { useSimulation } from "../../context/simulation";
 
 type BoxProps = {
   number: number;
@@ -16,9 +16,9 @@ type BoxProps = {
 
 export const Box = React.forwardRef<HTMLDivElement, BoxProps>(
   ({ sheetNumber, size, number }, ref) => {
-    const openBoxes = useAtomValue(openBoxesAtom);
+    const { data } = useSimulation();
 
-    const open = openBoxes.some((box) => number === box.number);
+    const open = data.openBoxes.some((box) => number === box.number);
 
     return (
       <S.Container ref={ref} size={size}>

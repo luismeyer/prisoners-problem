@@ -1,41 +1,37 @@
 import { useAtom, useAtomValue } from "jotai";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
+import { useSimulation } from "../../context/simulation";
 
 import { Config as ConfigType, configAtom } from "../../store/config";
-import { simulationStateAtom } from "../../store/simulation";
 import * as S from "./styled";
 
-type FormFields = Pick<
-  ConfigType,
-  "inmateCount" | "strategy" | "simulationCount"
->;
-
 export const Config: FC = () => {
+  const simulation = useSimulation();
+
   const [config, setConfig] = useAtom(configAtom);
 
-  const simulation = useAtomValue(simulationStateAtom);
-
-  const { register, handleSubmit } = useForm<FormFields>({
-    defaultValues: {
-      inmateCount: config.inmateCount,
-      simulationCount: config.simulationCount,
-      strategy: config.strategy,
-    },
+  const { register, handleSubmit } = useForm<ConfigType>({
+    defaultValues: config,
     mode: "onChange",
   });
 
-  const onChange = (values: FormFields) => {
-    setConfig({ ...config, ...values });
+  const onChange = (values: ConfigType) => {
+    setConfig({
+      ...config,
+      problemCount: Number(values.problemCount),
+      simulationCount: Number(values.simulationCount),
+      simulationSpeed: Number(values.simulationSpeed),
+    });
   };
 
-  const configDisabled = simulation !== "setup";
+  const configDisabled = simulation.status !== "setup";
 
   return (
     <S.Container>
       <S.Form onChange={handleSubmit(onChange)}>
         <S.FormField>
-          <label>Strategie</label>
+          <label>Strategy</label>
           <input
             type="text"
             disabled={configDisabled}
@@ -44,20 +40,29 @@ export const Config: FC = () => {
         </S.FormField>
 
         <S.FormField>
-          <label>Gefangene</label>
+          <label>Problem Count</label>
           <input
             type="number"
             disabled={configDisabled}
-            {...register("inmateCount")}
+            {...register("problemCount")}
           />
         </S.FormField>
 
         <S.FormField>
-          <label>Simulations Runden</label>
+          <label>Simulations Count</label>
           <input
             type="number"
             disabled={configDisabled}
             {...register("simulationCount")}
+          />
+        </S.FormField>
+
+        <S.FormField>
+          <label>Simulations Speed</label>
+          <input
+            type="number"
+            disabled={configDisabled}
+            {...register("simulationSpeed")}
           />
         </S.FormField>
       </S.Form>
