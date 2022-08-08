@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "name": "prisoners-problem",
+  "workspaces": [
+    "packages/**"
+  ],
+  "scripts": {}
+}
