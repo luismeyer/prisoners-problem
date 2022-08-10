@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
+    "rootDir": "src",
+
     "strict": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -8,9 +12,7 @@
     "target": "es6",
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "sourceMap": true,
-    "outDir": "dist",
-    "baseUrl": "."
+    "sourceMap": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

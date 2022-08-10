@@ -6,10 +6,7 @@ export const Grid = styled.div<{ boxCount: number; boxSize: number }>`
 
   display: grid;
   grid-gap: ${(props) => props.boxSize}px;
-  grid-template-columns: repeat(
-    ${(props) => Math.floor(Math.sqrt(props.boxCount))},
-    1fr
-  );
+  grid-template-columns: repeat(${(props) => Math.floor(Math.sqrt(props.boxCount))}, 1fr);
 
   align-items: center;
   justify-items: center;

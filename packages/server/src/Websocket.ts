@@ -22,11 +22,7 @@ type ApiEvent = {
   closedBoxes: SimpleBox[];
 };
 
-type ApiMessage =
-  | UpdateMessage
-  | ResultMessage
-  | ConnectMessage
-  | RunningMessage;
+type ApiMessage = UpdateMessage | ResultMessage | ConnectMessage | RunningMessage;
 
 type ConnectMessage = {
   type: "connected";
@@ -63,8 +59,7 @@ export class WebSocketServer {
       const payload: StartMessage = JSON.parse(message);
 
       const config = new Config();
-      const { problemCount, simulationCount, strategy, simulationSpeed } =
-        payload;
+      const { problemCount, simulationCount, strategy, simulationSpeed } = payload;
 
       if (problemCount && typeof problemCount === "number") {
         config.PROBLEM_COUNT = problemCount;

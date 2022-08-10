@@ -4,7 +4,6 @@ import OpenIcon from "../../icons/open.png";
 import CloseIcon from "../../icons/closed.png";
 
 import * as S from "./styled";
-import { useAtomValue } from "jotai";
 import { useSimulation } from "../../context/simulation";
 
 type BoxProps = {
@@ -14,19 +13,17 @@ type BoxProps = {
   size: number;
 };
 
-export const Box = React.forwardRef<HTMLDivElement, BoxProps>(
-  ({ sheetNumber, size, number }, ref) => {
-    const { data } = useSimulation();
+export const Box = React.forwardRef<HTMLDivElement, BoxProps>(({ sheetNumber, size, number }, ref) => {
+  const { data } = useSimulation();
 
-    const open = data.openBoxes.some((box) => number === box.number);
+  const open = data.openBoxes.some((box) => number === box.number);
 
-    return (
-      <S.Container ref={ref} size={size}>
-        <S.Img size={size} src={open ? OpenIcon : CloseIcon} />
-        {open && <S.Sheet size={size}>{sheetNumber}</S.Sheet>}
+  return (
+    <S.Container ref={ref} size={size}>
+      <S.Img size={size} src={open ? OpenIcon : CloseIcon} />
+      {open && <S.Sheet size={size}>{sheetNumber}</S.Sheet>}
 
-        <S.Number>{number}</S.Number>
-      </S.Container>
-    );
-  }
-);
+      <S.Number>{number}</S.Number>
+    </S.Container>
+  );
+});

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "baseBranch": "origin/main",
+  "pipeline": {
+    "lint": {
+      "dependsOn": ["^lint"],
+      "inputs": [".eslintrc.json", "packages/**/*.tsx", "packages/**/*.ts", "packages/**/*.ts"]
+    },
+    "prettier": {
+      "dependsOn": ["^prettier"],
+      "inputs": [".eslintrc.json", "packages/**/*.tsx", "packages/**/*.ts", "packages/**/*.ts"]
+    },
+    "build": {
+      "dependsOn": ["lint", "prettier"]
+    },
+    "start": {
+      "dependsOn": ["build"]
+    },
+    "dev": {
+      "inputs": ["packages/**/*.tsx", "packages/**/*.ts", "packages/**/*.ts"]
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
 import { useSimulation } from "../../context/simulation";
@@ -32,47 +32,28 @@ export const Config: FC = () => {
       <S.Form onChange={handleSubmit(onChange)}>
         <S.FormField>
           <label>Strategy</label>
-          <input
-            type="text"
-            disabled={configDisabled}
-            {...register("strategy")}
-          />
+          <input type="text" disabled={configDisabled} {...register("strategy")} />
         </S.FormField>
 
         <S.FormField>
           <label>Problem Count</label>
-          <input
-            type="number"
-            disabled={configDisabled}
-            {...register("problemCount")}
-          />
+          <input type="number" disabled={configDisabled} {...register("problemCount")} />
         </S.FormField>
 
         <S.FormField>
           <label>Simulations Count</label>
-          <input
-            type="number"
-            disabled={configDisabled}
-            {...register("simulationCount")}
-          />
+          <input type="number" disabled={configDisabled} {...register("simulationCount")} />
         </S.FormField>
 
         <S.FormField>
           <label>Simulations Speed</label>
-          <input
-            type="number"
-            disabled={configDisabled}
-            {...register("simulationSpeed")}
-          />
+          <input type="number" disabled={configDisabled} {...register("simulationSpeed")} />
         </S.FormField>
       </S.Form>
 
       <S.FormField>
         <label>UI aktiviert</label>
-        <button
-          disabled={configDisabled}
-          onClick={() => setConfig({ ...config, ui: !config.ui })}
-        >
+        <button disabled={configDisabled} onClick={() => setConfig({ ...config, ui: !config.ui })}>
           {config.ui ? "deactivate" : "activate"}
         </button>
       </S.FormField>

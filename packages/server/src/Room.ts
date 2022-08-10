@@ -5,7 +5,7 @@ import { Inmate } from "./Inmate";
 import { Sheet } from "./Sheet";
 
 export class Room {
-  public boxCount: number = 0;
+  public boxCount = 0;
 
   private _openBoxes: Box[] = [];
   private _allBoxes: Box[] = [];
@@ -38,10 +38,7 @@ export class Room {
   }
 
   public get closedBoxes(): Box[] {
-    console.log(this._allBoxes, this._openBoxes);
-    return this._allBoxes.filter(
-      (box1) => !this._openBoxes.some((box2) => box1.number === box2.number)
-    );
+    return this._allBoxes.filter((box1) => !this._openBoxes.some((box2) => box1.number === box2.number));
   }
 
   public get openBoxes(): Box[] {

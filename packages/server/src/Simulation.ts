@@ -47,7 +47,11 @@ export class Simulation {
     let result: boolean[] = [];
 
     // execute the strategy for each inmate
-    for (let inmate of inmates) {
+    for (const inmate of inmates) {
+      if (!this._isRunning) {
+        break;
+      }
+
       result = [...result, await guard.superviseBoxOpening(room, inmate)];
     }
 
@@ -73,6 +77,10 @@ export class Simulation {
     let runData: Record<number, RunResult> = {};
 
     while (runNumber < SIMULATION_COUNT) {
+      if (!this._isRunning) {
+        break;
+      }
+
       runNumber = runNumber + 1;
 
       const fails = await this.run();

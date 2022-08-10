@@ -47,9 +47,16 @@ export const useApi = () => {
     client.current?.send(JSON.stringify(config));
   }, [client.current, config]);
 
+  const stop = useCallback(() => {
+    setStatus("setup");
+
+    client.current?.send("STOP");
+  }, [client.current]);
+
   return {
     loading,
     start,
+    stop,
     simulation: data,
     status,
   };

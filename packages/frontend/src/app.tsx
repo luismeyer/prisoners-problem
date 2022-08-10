@@ -10,7 +10,7 @@ import { configAtom } from "./store/config";
 export const App: FC = () => {
   const config = useAtomValue(configAtom);
 
-  const { start, loading, simulation, status } = useApi();
+  const { start, loading, simulation, status, stop } = useApi();
 
   const startSimulation = useCallback(() => {
     if (loading) {
@@ -25,7 +25,13 @@ export const App: FC = () => {
       <Config />
 
       <div>
-        <button onClick={startSimulation}>start</button>
+        <button disabled={status === "running"} onClick={startSimulation}>
+          start
+        </button>
+
+        <button disabled={status !== "running"} onClick={stop}>
+          stop
+        </button>
       </div>
 
       <div>

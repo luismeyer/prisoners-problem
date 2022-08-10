@@ -1,13 +1,9 @@
 import { useAtomValue } from "jotai";
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useMemo, useRef } from "react";
 
 import { useSimulation } from "../../context/simulation";
-import {
-  ChildRef,
-  Locations,
-  useRelativePositions,
-} from "../../hooks/use-relativ-position";
-import { useResizeEffect } from "../../hooks/use-resize-effect";
+import { ChildRef, useRelativePositions } from "../../hooks/use-relativ-position";
+
 import { configAtom } from "../../store/config";
 import { Box } from "../box";
 import { Inmate } from "../inmate";
@@ -30,10 +26,7 @@ export const Room: FC = () => {
   }, [config.problemCount]);
 
   const allBoxes = useMemo(
-    () =>
-      [...data.closedBoxes, ...data.openBoxes].sort(
-        (a, b) => a.number - b.number
-      ),
+    () => [...data.closedBoxes, ...data.openBoxes].sort((a, b) => a.number - b.number),
     [data.closedBoxes, data.openBoxes]
   );
 

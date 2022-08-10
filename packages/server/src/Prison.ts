@@ -18,9 +18,7 @@ export class Prison {
   public generateInmates(count: number) {
     this._room.setupBoxes(count);
 
-    this._inmates = Array.from({ length: count }).map(
-      (_, index) => new Inmate(index)
-    );
+    this._inmates = Array.from({ length: count }).map((_, index) => new Inmate(index));
   }
 
   public get guard() {

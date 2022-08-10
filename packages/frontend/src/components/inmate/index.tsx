@@ -33,11 +33,7 @@ export const Inmate: FC<InmateProps> = ({ boxLocations }) => {
   }, [data.currentBox, boxLocations]);
 
   return (
-    <S.AbsoluteContainer
-      speed={simulationSpeed / 1000}
-      left={location.left}
-      top={location.top}
-    >
+    <S.AbsoluteContainer speed={simulationSpeed / 1000} left={location.left} top={location.top}>
       <S.Img src={PrisonerImg} />
     </S.AbsoluteContainer>
   );
