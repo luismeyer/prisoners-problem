@@ -3,21 +3,22 @@
   "baseBranch": "origin/main",
   "pipeline": {
     "lint": {
-      "dependsOn": ["^lint"],
-      "inputs": [".eslintrc.json", "packages/**/*.tsx", "packages/**/*.ts", "packages/**/*.ts"]
+      "dependsOn": ["^lint"]
     },
     "prettier": {
-      "dependsOn": ["^prettier"],
-      "inputs": [".eslintrc.json", "packages/**/*.tsx", "packages/**/*.ts", "packages/**/*.ts"]
+      "dependsOn": ["^prettier"]
+    },
+    "test": {
+      "dependsOn": ["lint", "prettier"]
     },
     "build": {
-      "dependsOn": ["lint", "prettier"]
+      "dependsOn": ["^build"]
     },
     "start": {
       "dependsOn": ["build"]
     },
     "dev": {
-      "inputs": ["packages/**/*.tsx", "packages/**/*.ts", "packages/**/*.ts"]
+      "cache": false
     }
   }
 }

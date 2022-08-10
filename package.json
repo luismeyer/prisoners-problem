@@ -8,7 +8,8 @@
     "dev": "turbo run dev --parallel",
     "start": "turbo run start --parallel",
     "lint": "turbo run lint",
-    "prettier": "turbo run prettier"
+    "prettier": "turbo run prettier",
+    "test": "turbo run test"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.33.0",
