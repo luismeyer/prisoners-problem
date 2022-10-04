@@ -15,10 +15,12 @@ export class Prison {
     this._room = new Room(this._guard, config);
   }
 
-  public generateInmates(count: number) {
-    this._room.setupBoxes(count);
+  public async generateInmates(count: number) {
+    await this._room.setupBoxes(count);
 
-    this._inmates = Array.from({ length: count }).map((_, index) => new Inmate(index));
+    this._inmates = Array(count)
+      .fill(0)
+      .map((_, index) => new Inmate(index));
   }
 
   public get guard() {

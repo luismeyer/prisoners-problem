@@ -31,7 +31,7 @@ export class Guard {
   }
 
   public async superviseBoxOpening(room: Room, inmate: Inmate): Promise<boolean> {
-    room.join(inmate);
+    await room.join(inmate);
 
     const allowedBoxes = room.boxCount / 2;
 

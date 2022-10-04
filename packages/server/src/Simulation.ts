@@ -30,7 +30,7 @@ export class Simulation {
 
     // create prison with inmates
     const prison = new Prison(this._config);
-    prison.generateInmates(PROBLEM_COUNT);
+    await prison.generateInmates(PROBLEM_COUNT);
 
     const { guard, inmates, room } = prison;
 

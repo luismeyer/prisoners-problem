@@ -31,6 +31,7 @@ type ConnectMessage = {
 
 type UpdateMessage = {
   type: "update";
+  message: number;
   data: ApiEvent;
 };
 
@@ -142,6 +143,8 @@ export class WebSocketServer {
 export class ServerAdapter extends UIAdapter {
   public websocket: ws.WebSocket;
 
+  private _messageCounter = 0;
+
   constructor(config: Config, websocket: ws.WebSocket) {
     super(config);
 
@@ -170,7 +173,9 @@ export class ServerAdapter extends UIAdapter {
   emitHandler(event: UIEvent) {
     const simpleEvent = this.simplifyEvent(event);
 
-    const json = this.stringifyMessage({ type: "update", data: simpleEvent });
+    const json = this.stringifyMessage({ type: "update", message: this._messageCounter, data: simpleEvent });
+
+    this._messageCounter = this._messageCounter + 1;
 
     if (this.websocket.readyState !== this.websocket.OPEN) {
       return Promise.resolve();

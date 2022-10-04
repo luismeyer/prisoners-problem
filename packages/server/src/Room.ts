@@ -45,10 +45,6 @@ export class Room {
     return this._openBoxes;
   }
 
-  public checkOpenBoxes(): Box[] {
-    return this._openBoxes;
-  }
-
   public async reset(): Promise<void> {
     this._openBoxes = [];
     this._inmate = undefined;
@@ -69,7 +65,6 @@ export class Room {
   }
 
   private async updateUI(currentBox?: Box) {
-    // update the UI
     await this._config.UI_ADAPTER.emit({
       currentBox,
       closedBoxes: this.closedBoxes,
