@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useSimulation } from "../../context/simulation";
 
@@ -16,14 +16,19 @@ export const Config: FC = () => {
     mode: "onChange",
   });
 
-  const onChange = (values: ConfigType) => {
-    setConfig({
-      ...config,
-      problemCount: Number(values.problemCount),
-      simulationCount: Number(values.simulationCount),
-      simulationSpeed: Number(values.simulationSpeed),
-    });
-  };
+  const onChange = useCallback(
+    (values: ConfigType) => {
+      setConfig({
+        ...config,
+
+        ...values,
+        problemCount: Number(values.problemCount),
+        simulationCount: Number(values.simulationCount),
+        simulationSpeed: Number(values.simulationSpeed),
+      });
+    },
+    [config]
+  );
 
   const configDisabled = simulation.status !== "setup";
 
