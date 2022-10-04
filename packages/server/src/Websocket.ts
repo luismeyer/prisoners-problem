@@ -1,49 +1,11 @@
 import http from "http";
 import ws from "ws";
+import { ApiResponse, StartRequest, ApiSimulation, UpdateResponse } from "@prisoners-problem/api";
 
-import { SimpleBox } from "./Box";
 import { Config } from "./Config";
-import { SimpleInmate } from "./Inmate";
-import { Simulation, SimulationResult } from "./Simulation";
+import { Simulation } from "./Simulation";
 import { Loop, Random } from "./Strategy";
 import { UIAdapter, UIEvent } from "./UIAdapter";
-
-type StartMessage = {
-  problemCount?: unknown;
-  strategy?: unknown;
-  simulationCount?: unknown;
-  simulationSpeed?: unknown;
-};
-
-type ApiEvent = {
-  currentInmate: SimpleInmate | undefined;
-  currentBox: SimpleBox | undefined;
-  openBoxes: SimpleBox[];
-  closedBoxes: SimpleBox[];
-};
-
-type ApiMessage = UpdateMessage | ResultMessage | ConnectMessage | RunningMessage;
-
-type ConnectMessage = {
-  type: "connected";
-  data: "success";
-};
-
-type UpdateMessage = {
-  type: "update";
-  message: number;
-  data: ApiEvent;
-};
-
-type ResultMessage = {
-  type: "done";
-  data: SimulationResult;
-};
-
-type RunningMessage = {
-  type: "running";
-  data: "success";
-};
 
 export class WebSocketServer {
   private _server: http.Server;
@@ -57,7 +19,7 @@ export class WebSocketServer {
 
   private parseConfig(message: string) {
     try {
-      const payload: StartMessage = JSON.parse(message);
+      const payload: StartRequest = JSON.parse(message);
 
       const config = new Config();
       const { problemCount, simulationCount, strategy, simulationSpeed } = payload;
@@ -88,15 +50,15 @@ export class WebSocketServer {
     }
   }
 
-  private sendToWebsocket(ws: ws.WebSocket) {
-    return (data: ApiMessage) => ws.send(JSON.stringify(data));
+  private createSendToWebsocket(ws: ws.WebSocket) {
+    return (data: ApiResponse) => ws.send(JSON.stringify(data));
   }
 
   public start() {
     const wss = new ws.Server({ server: this._server });
 
     wss.on("connection", (ws) => {
-      const send = this.sendToWebsocket(ws);
+      const send = this.createSendToWebsocket(ws);
 
       ws.on("close", () => {
         const simulation = this._simulations.get(ws);
@@ -151,7 +113,7 @@ export class ServerAdapter extends UIAdapter {
     this.websocket = websocket;
   }
 
-  private simplifyEvent(event: UIEvent): ApiEvent {
+  private simplifyEvent(event: UIEvent): ApiSimulation {
     const closedBoxes = event.closedBoxes.map((box) => box.simplify());
     const openBoxes = event.openBoxes.map((box) => box.simplify());
     const currentBox = event.currentBox?.simplify();
@@ -166,7 +128,7 @@ export class ServerAdapter extends UIAdapter {
     };
   }
 
-  private stringifyMessage(message: UpdateMessage): string {
+  private stringifyMessage(message: UpdateResponse): string {
     return JSON.stringify(message);
   }
 

@@ -1,0 +1,14 @@
+{
+  "name": "@prisoners-problem/api",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsc --build --watch",
+    "build": "tsc --build"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  }
+}

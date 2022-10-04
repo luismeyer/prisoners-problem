@@ -1,6 +1,7 @@
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ApiMessage, Simulation } from "../api";
+import { ApiSimulation, ApiResponse } from "@prisoners-problem/api";
+
 import { configAtom } from "../store/config";
 
 export const useApi = () => {
@@ -8,7 +9,7 @@ export const useApi = () => {
 
   const client = useRef<WebSocket>();
 
-  const [data, setData] = useState<Simulation>({
+  const [data, setData] = useState<ApiSimulation>({
     closedBoxes: [],
     openBoxes: [],
     currentBox: undefined,
@@ -25,7 +26,7 @@ export const useApi = () => {
     }
 
     client.current.onmessage = (message) => {
-      const { type, data }: ApiMessage = JSON.parse(message.data.toString());
+      const { type, data }: ApiResponse = JSON.parse(message.data.toString());
 
       if (type === "update") {
         setData(data);
