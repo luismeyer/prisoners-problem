@@ -1,6 +1,6 @@
 import http from "http";
 import ws from "ws";
-import { ApiResponse, StartRequest, ApiSimulation, UpdateResponse } from "@prisoners-problem/api";
+import { ApiResponse, StartRequest, ApiSimulation, UpdateResponse, ApiRequest } from "@prisoners-problem/api";
 
 import { Config } from "./Config";
 import { Simulation } from "./Simulation";
@@ -17,10 +17,8 @@ export class WebSocketServer {
     this._simulations = new WeakMap();
   }
 
-  private parseConfig(message: string) {
+  private parseConfig(payload: StartRequest) {
     try {
-      const payload: StartRequest = JSON.parse(message);
-
       const config = new Config();
       const { problemCount, simulationCount, strategy, simulationSpeed } = payload;
 
@@ -69,16 +67,23 @@ export class WebSocketServer {
       ws.on("message", async (message) => {
         const simulation = this._simulations.get(ws);
 
-        const payload = message.toString();
+        const payload: ApiRequest = JSON.parse(message.toString());
 
-        if (simulation && payload === "STOP") {
+        if (simulation && payload.type === "stop") {
           simulation.stop();
           this._simulations.delete(ws);
+
           return;
         }
 
         if (simulation) {
           send({ type: "running", data: "success" });
+          return;
+        }
+
+        if (payload.type !== "start") {
+          console.error("Wrong payload ", payload);
+
           return;
         }
 

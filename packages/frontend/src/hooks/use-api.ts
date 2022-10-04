@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ApiSimulation, ApiResponse } from "@prisoners-problem/api";
+import { ApiSimulation, ApiResponse, ApiRequest } from "@prisoners-problem/api";
 
 import { configAtom } from "../store/config";
 
@@ -42,17 +42,24 @@ export const useApi = () => {
     };
   }, [client.current]);
 
+  const sendApiRequest = useCallback(
+    (request: ApiRequest) => {
+      client.current?.send(JSON.stringify(request));
+    },
+    [client.current]
+  );
+
   const start = useCallback(() => {
     setStatus("running");
 
-    client.current?.send(JSON.stringify(config));
-  }, [client.current, config]);
+    sendApiRequest({ type: "start", ...config });
+  }, [sendApiRequest, config]);
 
   const stop = useCallback(() => {
     setStatus("setup");
 
-    client.current?.send("STOP");
-  }, [client.current]);
+    sendApiRequest({ type: "stop" });
+  }, [sendApiRequest]);
 
   return {
     loading,
