@@ -86,6 +86,13 @@ export class Simulation {
       const fails = await this.run();
       const failRate = fails / PROBLEM_COUNT;
 
+      await this._config.UI_ADAPTER.emit({
+        type: "stats",
+        failRate,
+        fails,
+        runNumber,
+      });
+
       overallFailRate = overallFailRate + failRate;
       failedInmates = failedInmates + fails;
 

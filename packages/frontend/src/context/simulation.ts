@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
-import { Simulation } from "../api";
+
+import { ApiSimulation } from "@prisoners-problem/api";
 
 type SimulationContext = {
   status: "setup" | "running";
-  data: Simulation;
+  data: ApiSimulation;
+  // runResults: RunResponse[];
 };
 
 export const SimulationContext = React.createContext<SimulationContext>({
@@ -14,6 +16,7 @@ export const SimulationContext = React.createContext<SimulationContext>({
     currentBox: undefined,
     currentInmate: undefined,
   },
+  // runResults: [],
 });
 
 export const useSimulation = () => {

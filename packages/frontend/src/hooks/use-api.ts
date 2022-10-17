@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ApiSimulation, ApiResponse, ApiRequest } from "@prisoners-problem/api";
+import { ApiSimulation, ApiResponse, ApiRequest, RunResponse } from "@prisoners-problem/api";
 
 import { configAtom } from "../store/config";
 
@@ -18,6 +18,8 @@ export const useApi = () => {
 
   const [status, setStatus] = useState<"setup" | "running">("setup");
 
+  const [runResults, setRunResults] = useState<RunResponse[]>([]);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,6 +32,9 @@ export const useApi = () => {
 
       if (type === "update") {
         setData(data);
+      }
+
+      if (type === "done") {
       }
 
       if (type === "done") {

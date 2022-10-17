@@ -1,10 +1,11 @@
 import { useAtom } from "jotai";
 import { FC, useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { useSimulation } from "../../context/simulation";
 
+import { useSimulation } from "../../context/simulation";
 import { Config as ConfigType, configAtom } from "../../store/config";
 import * as S from "./styled";
+import { colorScheme } from "../../main";
 
 export const Config: FC = () => {
   const simulation = useSimulation();
@@ -42,6 +43,7 @@ export const Config: FC = () => {
 
         <S.FormField>
           <label>Problem Count</label>
+
           <input type="number" disabled={configDisabled} {...register("problemCount")} />
         </S.FormField>
 
@@ -58,6 +60,7 @@ export const Config: FC = () => {
 
       <S.FormField>
         <label>UI aktiviert</label>
+
         <button disabled={configDisabled} onClick={() => setConfig({ ...config, ui: !config.ui })}>
           {config.ui ? "deactivate" : "activate"}
         </button>

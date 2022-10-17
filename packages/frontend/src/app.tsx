@@ -1,6 +1,8 @@
 import { useAtomValue } from "jotai";
 import { FC, useCallback } from "react";
 
+import { Button } from "@chakra-ui/react";
+
 import { Config } from "./components/config";
 import { Room } from "./components/room";
 import { SimulationContext } from "./context/simulation";
@@ -25,13 +27,13 @@ export const App: FC = () => {
       <Config />
 
       <div>
-        <button disabled={status === "running"} onClick={startSimulation}>
+        <Button colorScheme="blackAlpha" disabled={status === "running"} onClick={startSimulation}>
           start
-        </button>
+        </Button>
 
-        <button disabled={status !== "running"} onClick={stop}>
+        <Button disabled={status !== "running"} onClick={stop}>
           stop
-        </button>
+        </Button>
       </div>
 
       <div>

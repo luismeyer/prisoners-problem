@@ -66,6 +66,7 @@ export class Room {
 
   private async updateUI(currentBox?: Box) {
     await this._config.UI_ADAPTER.emit({
+      type: "sim",
       currentBox,
       closedBoxes: this.closedBoxes,
       openBoxes: this.openBoxes,

@@ -1,11 +1,11 @@
 import http from "http";
 import ws from "ws";
-import { ApiResponse, StartRequest, ApiSimulation, UpdateResponse, ApiRequest } from "@prisoners-problem/api";
+import { ApiResponse, StartRequest, StatsResponse, UpdateResponse, ApiRequest } from "@prisoners-problem/api";
 
 import { Config } from "./Config";
 import { Simulation } from "./Simulation";
 import { Loop, Random } from "./Strategy";
-import { UIAdapter, UIEvent } from "./UIAdapter";
+import { UIAdapter, UISimulationUpdate, UIStatsUpdate, UIUpdate } from "./UIAdapter";
 
 export class WebSocketServer {
   private _server: http.Server;
@@ -72,7 +72,6 @@ export class WebSocketServer {
         if (simulation && payload.type === "stop") {
           simulation.stop();
           this._simulations.delete(ws);
-
           return;
         }
 
@@ -83,7 +82,6 @@ export class WebSocketServer {
 
         if (payload.type !== "start") {
           console.error("Wrong payload ", payload);
-
           return;
         }
 
@@ -110,39 +108,60 @@ export class WebSocketServer {
 export class ServerAdapter extends UIAdapter {
   public websocket: ws.WebSocket;
 
-  private _messageCounter = 0;
-
   constructor(config: Config, websocket: ws.WebSocket) {
     super(config);
 
     this.websocket = websocket;
   }
 
-  private simplifyEvent(event: UIEvent): ApiSimulation {
-    const closedBoxes = event.closedBoxes.map((box) => box.simplify());
-    const openBoxes = event.openBoxes.map((box) => box.simplify());
-    const currentBox = event.currentBox?.simplify();
-
-    const currentInmate = event.currentInmate?.simplify();
-
+  private createStatsUpdate(update: UIStatsUpdate): StatsResponse {
     return {
-      currentInmate,
-      currentBox,
-      openBoxes,
-      closedBoxes,
+      type: "stats",
+      data: {
+        failRate: update.failRate,
+        fails: update.fails,
+      },
     };
   }
 
-  private stringifyMessage(message: UpdateResponse): string {
+  private createSimulationUpdate(update: UISimulationUpdate): UpdateResponse {
+    const closedBoxes = update.closedBoxes.map((box) => box.simplify());
+    const openBoxes = update.openBoxes.map((box) => box.simplify());
+    const currentBox = update.currentBox?.simplify();
+
+    const currentInmate = update.currentInmate?.simplify();
+
+    return {
+      type: "update",
+      data: {
+        currentInmate,
+        currentBox,
+        openBoxes,
+        closedBoxes,
+      },
+    };
+  }
+
+  private createUpdateResponse(update: UIUpdate): ApiResponse {
+    if (update.type === "sim") {
+      return this.createSimulationUpdate(update);
+    }
+
+    if (update.type === "stats") {
+      return this.createStatsUpdate(update);
+    }
+
+    return { type: "running", data: "success" };
+  }
+
+  private stringifyMessage(message: unknown): string {
     return JSON.stringify(message);
   }
 
-  emitHandler(event: UIEvent) {
-    const simpleEvent = this.simplifyEvent(event);
+  public emitHandler(event: UIUpdate) {
+    const response = this.createUpdateResponse(event);
 
-    const json = this.stringifyMessage({ type: "update", message: this._messageCounter, data: simpleEvent });
-
-    this._messageCounter = this._messageCounter + 1;
+    const json = this.stringifyMessage(response);
 
     if (this.websocket.readyState !== this.websocket.OPEN) {
       return Promise.resolve();
